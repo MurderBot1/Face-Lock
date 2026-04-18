@@ -1,4 +1,5 @@
-from os import listdir, path, makedirs
+from os import listdir, makedirs
+from os.path import isdir, join
 from time import time, sleep
 from cv2 import VideoCapture, imread
 from numpy import dot
@@ -18,14 +19,14 @@ def load_insightface():
 
 def load_person_embeddings(app, folder):
     embs = []
-    if not path.isdir(folder):
+    if not isdir(folder):
         makedirs(folder, exist_ok=True)
         print(f"[INFO] Created folder: {folder}")
         print("[INFO] Add your face images there and rerun.")
         return embs
 
     for file in listdir(folder):
-        path = path.join(folder, file)
+        path = join(folder, file)
         img = imread(path)
         if img is None:
             continue
@@ -61,11 +62,11 @@ def wait_until_person_back(app, cam, known_embs, check_interval=0.5):
     while True:
         ret, frame = cam.read()
         if not ret:
-            time.sleep(check_interval)
+            sleep(check_interval)
             continue
         if person_in_frame(app, frame, known_embs):
             return
-        time.sleep(check_interval)
+        sleep(check_interval)
 
 def main():
     app = load_insightface()
